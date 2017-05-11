@@ -7,6 +7,7 @@ public class Percolation {
 	private boolean[] open;
 	private int openCount;
 	private WeightedQuickUnionUF uf;
+	private WeightedQuickUnionUF uf_nobottom;
 	private int size;
 	private int virtualTop;
 	private int virtualBottom;
@@ -18,10 +19,12 @@ public class Percolation {
 	   open = new boolean[n*n];
 	   openCount = 0;
 	   uf = new WeightedQuickUnionUF(size * size + 2); // virtualTop = idx[n*n],virtualBottom=idx[n
+	   uf_nobottom = new WeightedQuickUnionUF(size * size + 2);
 	   virtualTop = n*n;
 	   virtualBottom = n*n+1;
 	   for(int i=1;i<=size;i++){
 		   uf.union(getUFidx(1,i),virtualTop);
+		   uf_nobottom.union(getUFidx(1,i),virtualTop);
 		   uf.union(getUFidx(size,i),virtualBottom);
 	   }	   
    }
@@ -30,12 +33,19 @@ public class Percolation {
    public   void open(int row, int col)  {
 	   if((row < 1 || row > size) || (col<1 || col > size) )
 		   throw new IndexOutOfBoundsException();
+	   else if (size == 1) {
+		   int idx = getUFidx(row,col);
+		   if(open[idx] == false){
+			   open[idx] = true;
+			   openCount++;
+		   }
+	   }
 	   else {
 		   int idx = getUFidx(row,col);
 		   if(open[idx] == false){
 			   open[idx] = true;
 			   openCount++;
-			   
+			   /*
 			   if(row == 1){
 				   if(col == 1) {
 					   //only right and below
@@ -84,7 +94,7 @@ public class Percolation {
 						   uf.union(getUFidx(row,col), getUFidx(row-1,col));				   
 				   }
 			   }
-			   else if(col == 1 && row > 1 && row < size) {
+			   else if(col == 1 ) {
 				   //above,below,right
 				   if(isOpen(row,col+1) && !uf.connected(getUFidx(row,col), getUFidx(row,col+1)))
 					   uf.union(getUFidx(row,col), getUFidx(row,col+1));
@@ -93,7 +103,7 @@ public class Percolation {
 				   if(isOpen(row-1,col) && !uf.connected(getUFidx(row,col), getUFidx(row-1,col)))
 					   uf.union(getUFidx(row,col), getUFidx(row-1,col)); 
 			   }
-			   else if(col == size && row > 1 && row < size){
+			   else if(col == size){
 				   //above,below,left
 				   if(isOpen(row,col-1) && !uf.connected(getUFidx(row,col), getUFidx(row,col-1)))
 					   uf.union(getUFidx(row,col), getUFidx(row,col-1));
@@ -113,12 +123,36 @@ public class Percolation {
 			   if(isOpen(row-1,col) && !uf.connected(getUFidx(row,col), getUFidx(row-1,col)))
 				   uf.union(getUFidx(row,col), getUFidx(row-1,col)); 
 			   }
+			   */
+			   if(row == 1){
+				   uf.union(getUFidx(row,col), virtualTop);
+			       uf_nobottom.union(getUFidx(row,col), virtualTop);
+			   }
+			   if(row == size){
+				   uf.union(getUFidx(row,col), virtualBottom);
+			   }
+			   if(row > 1 && isOpen(row-1,col)){
+				   uf.union(getUFidx(row,col), getUFidx(row-1,col));
+			       uf_nobottom.union(getUFidx(row,col), getUFidx(row-1,col));
+			   }
+			   if(row < size && isOpen(row+1,col)) {
+				   uf.union(getUFidx(row,col), getUFidx(row+1,col));
+			       uf_nobottom.union(getUFidx(row,col), getUFidx(row+1,col));
+			   }
+			   if(col > 1 && isOpen(row,col-1)) {
+				   uf.union(getUFidx(row,col), getUFidx(row,col-1));
+			       uf_nobottom.union(getUFidx(row,col), getUFidx(row,col-1));
+			   }
+			   if(col < size && isOpen(row,col+1)) {
+				   uf.union(getUFidx(row,col), getUFidx(row,col+1));
+			   	   uf_nobottom.union(getUFidx(row,col), getUFidx(row,col+1));
+			   }
 		   }
 	   	}
    }
    //
    public boolean isOpen(int row, int col)  {
-	   if((row < 1 || row > size) || (col<1 || col > size) )
+	   if((row < 1 || row > size) || (col<1 || col > size))
 		   throw new IndexOutOfBoundsException(); 
 	   else {
 		   //int idx = (row-1)*size+(col-1);
@@ -127,8 +161,8 @@ public class Percolation {
 	   }
    }
    //Convert from 2D (row,col) to 1D index of weightUF
-   public int getUFidx(int row, int col){
-	   return size * (row-1) + col-1;
+   private int getUFidx(int row, int col){
+	   return size * (row-1) + (col-1);
    }
    
 	   public boolean isFull(int row, int col) {
@@ -140,7 +174,7 @@ public class Percolation {
 			   if(open[idx] == false)
 				   return false;
 			   else {
-				   return uf.connected(virtualTop, getUFidx(row,col));
+				   return (uf_nobottom.connected(virtualTop, getUFidx(row,col)) && uf.connected(virtualTop, getUFidx(row,col)));
 			   }
 		   }			   
 	   }
@@ -151,11 +185,26 @@ public class Percolation {
 	   }
 	   public boolean percolates()        {
 		   // does the system percolate?
-		   return uf.connected(virtualTop, virtualBottom);   
+		   if (size == 1){
+			  int idx = getUFidx(1,1);  
+			  return (open[idx]);  
+		   }
+		   else 
+			   return uf.connected(virtualTop, virtualBottom);   
 	   }
 
 	   public static void main(String[] args) {
 		   // test client (optional)
+		   int n2 = 1;
+		   Percolation t0 = new Percolation(n2);	
+		   StdOut.println(t0.isOpen(1, 1));
+		   StdOut.println(t0.percolates());	
+		   t0.isOpen(1, 1);
+		   t0.open(1,1);
+		   StdOut.println(t0.isOpen(1, 1));
+		   StdOut.println(t0.percolates());	
+		   
+		   
 		   int n1 = 4;
 		   Percolation t1 = new Percolation(n1);
 		   t1.open(1,1);
@@ -187,6 +236,7 @@ public class Percolation {
 		   System.out.println(t2.uf.connected(t2.virtualBottom, t2.getUFidx(3, 2)));
 		   System.out.println(t2.uf.connected(t2.virtualTop, t2.getUFidx(1, 2)));
 		   System.out.println(t2.uf.connected(t2.virtualTop, t2.virtualBottom));
+	   
 	   }
 	   
 
