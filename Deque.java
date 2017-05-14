@@ -131,10 +131,13 @@ public class Deque<Item> implements Iterable<Item> {
 			return curr != null;
 		}
 		public void remove(){
-			throw new UnsupportedOperationException();
+			throw new java.lang.UnsupportedOperationException();
 			
 		}		
 		public Item next(){
+			if(!hasNext())
+				throw new java.util.NoSuchElementException();
+			
 			Item i = curr.item;
 			curr = curr.next;
 			return i;
@@ -142,9 +145,21 @@ public class Deque<Item> implements Iterable<Item> {
 	}
 	public static void main(String[] args) {
 		// unit testing (optional)
-		Deque q = new Deque();
+		Deque<String> q = new Deque<String>();
+		q.isEmpty();
 		q.addFirst("s");
 		q.addFirst("a");
+		q.addLast("k");
+		q.addLast("c");
+		System.out.println("last item is " + q.last.item);
+		q.removeLast();
+		System.out.println("last item is " + q.last.item);
+		System.out.println(q.first.item);	
+		System.out.println(q.first.next.item);	
+		System.out.println(q.last.item);
+		System.out.println(q.size);	
+		
+		Iterator<String> i = q.iterator();
 		
 	}
 
