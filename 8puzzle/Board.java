@@ -117,11 +117,19 @@ public class Board {
 		}
 	}
 	
-	private Board swap(int [][] blocks, int src_x, int src_y, int dest_x, int dest_y){
+	private int[][] getCopy (int[][] board){	
+		int [][] copy = new int[size][size];
+		for(int i = 0; i < size;i++){
+			for(int j = 0;j < size;j++){
+				copy[i][j] = board[i][j];							
+			}
+		}
+		return copy;
+	}
+	private void swap(int [][] blocks, int src_x, int src_y, int dest_x, int dest_y){
 		int temp = blocks[dest_x][dest_y];
 		blocks[dest_x][dest_y] = blocks[src_x][src_y];
 		blocks[src_x][src_y] = temp;
-		return new Board(blocks);
 	}
 	
 	//Returns an iterable objects of Boards which are all valid neighbors of the current board
@@ -140,23 +148,27 @@ public class Board {
 		}
 		
 		if( blankRow !=0){
-			int [][] copy = board;
-			Board bd= swap(copy,blankRow,blankCol,blankRow-1,blankCol);
+			int [][] copy = getCopy(board);
+			swap(copy,blankRow,blankCol,blankRow-1,blankCol);
+			Board bd = new Board(copy);
 			if (!neighbors.contains(bd)) neighbors.push(bd);
 		}
 		if(blankRow != size-1){
-			int [][] copy = board;
-			Board bd= swap(copy,blankRow,blankCol,blankRow+1,blankCol);
+			int [][] copy = getCopy(board);
+			swap(copy,blankRow,blankCol,blankRow+1,blankCol);
+			Board bd = new Board(copy);
 			if (!neighbors.contains(bd)) neighbors.push(bd);
 		}
 		if(blankCol != 0){
-			int [][] copy = board;
-			Board bd= swap(copy,blankRow,blankCol,blankRow,blankCol-1);
+			int [][] copy = getCopy(board);
+			swap(copy,blankRow,blankCol,blankRow,blankCol-1);
+			Board bd = new Board(copy);
 			if (!neighbors.contains(bd)) neighbors.push(bd);
 		}
 		if(blankCol != size-1){
-			int [][] copy = board;
-			Board bd= swap(copy,blankRow,blankCol,blankRow,blankCol+1);
+			int [][] copy = getCopy(board);
+		    swap(copy,blankRow,blankCol,blankRow,blankCol+1);
+		    Board bd = new Board(copy);
 			if (!neighbors.contains(bd)) neighbors.push(bd);
 		}
 		return neighbors;
