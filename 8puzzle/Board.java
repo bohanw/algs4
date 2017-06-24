@@ -193,18 +193,19 @@ public class Board {
 	    return s.toString();
 	}
 	
+	/*
 	public static void main(String[] args){
 		int size = 3;
 		int [][] puzzle = new int[3][3];
-		puzzle[0][0] = 8;
-		puzzle[0][1] = 1;
+		puzzle[0][0] = 1;
+		puzzle[0][1] = 2;
 		puzzle[0][2] = 3;
 		puzzle[1][0] = 4;
-		puzzle[1][1] = 0;
-		puzzle[1][2] = 2;
-		puzzle[2][0] = 7;
-		puzzle[2][1] = 6;
-		puzzle[2][2] = 5;
+		puzzle[1][1] = 5;
+		puzzle[1][2] = 6;
+		puzzle[2][0] = 8;
+		puzzle[2][1] = 7;
+		puzzle[2][2] = 0;
 		/*
 		int[][] goal = new int[3][3];
 		goal[0][0] = 1;
@@ -218,13 +219,13 @@ public class Board {
 		goal[2][2] = 0;
 		Board gl = new Board(goal);
 		System.out.println(gl);
-		System.out.println(Arrays.deepToString(puzzle));*/
+		System.out.println(Arrays.deepToString(puzzle));
 		Board bd = new Board(puzzle);
-
+		StdOut.println("manhattan is "+ bd.manhattan());
 		for(Board b: bd.neighbors()){
 			System.out.println(b.toString());
 		}
 		
 	}
-
+*/
 }
