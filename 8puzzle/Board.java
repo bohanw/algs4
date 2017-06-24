@@ -1,6 +1,5 @@
 import java.util.Arrays;  
 import java.util.Comparator; 
-import java.util.Random;
 import java.util.Stack;
 import edu.princeton.cs.algs4.*;
 
@@ -8,22 +7,23 @@ import edu.princeton.cs.algs4.*;
 public class Board {
 	private int[][] board;
 	private int size;
-	private int[][] goal;
+	//private int[][] goal;
 	
 	public Board(int[][] blocks) {
 		// construct a board from an n-by-n array of blocks
 		size = blocks.length;
 		this.board = new int[size][size];
-		this.goal = new int[size][size];
+		//this.goal = new int[size][size];
 
 		for(int i = 0;i < size;i++){
 			for (int j = 0;j<size;j++){
 				board[i][j] = blocks[i][j];
+				/*
 				if(i == size-1 && j == size-1)
 					this.goal[i][j] = 0;
 				else {
 					this.goal[i][j]  = i * size + (j + 1);
-				}
+				}*/
 			}
 		}
 		
@@ -39,8 +39,13 @@ public class Board {
 		int hammDist = 0;
 		for(int i = 0;i < size;i++){
 			for(int j = 0;j < size;j++){
-				if(board[i][j] != 0 && board[i][j] != goal[i][j]) {
-					hammDist++;
+				/*if(board[i][j] != 0 && board[i][j] != ) {
+				*	hammDist++;
+				}*/
+				if(i == size-1 && j == size-1){
+					if(board[i][j] != 0) hammDist++;
+				}else {
+					if(board[i][j] !=i*size+j+1) hammDist++;
 				}
 			}
 		}
@@ -55,7 +60,8 @@ public class Board {
 		for(int i = 0;i < size;i++){
 			for(int j = 0;j < size; j++){
 				if(board[i][j] != 0 ){
-					if(board[i][j] != goal[i][j]){
+					if((i == size-1 && j == size - 1 && board[i][j] != 0) || 
+						(!(i == size-1 && j == size - 1) && board[i][j] !=i*size+j+1 ) ){
 						goal_y = (board[i][j] -1) % size;
 						goal_x = (board[i][j] -1)/ size;
 						x_diff = Math.abs(goal_x - i);
